@@ -1,2 +1,5 @@
-﻿  Game.cpp
-  LinesOfAction.vcxproj -> C:\Users\Alex\documents\visual studio 2015\Projects\LinesOfAction\Debug\LinesOfAction.exe
+﻿  main.cpp
+  Game.cpp
+  Generating Code...
+c:\users\alex\desktop\linesofaction\linesofaction\linesofaction\game.cpp(209): warning C4715: 'Game::checkMove': not all control paths return a value
+  LinesOfAction.vcxproj -> C:\Users\Alex\Desktop\LinesOfAction\LinesOfAction\Debug\LinesOfAction.exe

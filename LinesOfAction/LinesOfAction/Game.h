@@ -21,18 +21,21 @@ public:
 	int getBlackPieces();
 	int getWhitePieces();
 	void checkWin();
-	void playerMove(int pieceRow, int pieceCol, int moveRow, int moveCol);
+	bool playerMove(int pieceRow, int pieceCol, int moveRow, int moveCol);
 	void aiMove();
 	bool checkMove(int pieceRow, int pieceCol, int moveRow, int moveCol);
 	void printBoard();
-	void capture();
+	void capture(int pieceRow, int pieceCol, int moveRow, int moveCol);
 	int getMovesRow(int pieceRow);
 	int getMovesCol(int pieceCol);
+	bool ifBlocked(int pieceRow, int pieceCol, int moveRow, int moveCol);
+	int getWin();
 private:
 	int aiColor;
 	int playerColor;
-	int whitePieces;
-	int blackPieces;
+	int whitePieces = 5;
+	int blackPieces = 5;
 	string currentTurn;
 	int gameBoard[ROWS][COLS];
+	int win = 0;
 };
