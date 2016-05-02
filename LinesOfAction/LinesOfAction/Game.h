@@ -17,12 +17,13 @@ public:
 	Game();
 	int getPlayer();
 	void restart();
+	int getAI();
 	void setWhitePiecesNum(int num);
 	void setBlackPiecesNum(int num);
 	int getBlackPieces();
 	int getWhitePieces();
 	void checkWin();
-	bool playerMove(int pieceRow, int pieceCol, int moveRow, int moveCol);
+	bool playerMove();
 	void aiMove();
 	bool checkMove(int pieceRow, int pieceCol, int moveRow, int moveCol);
 	void printBoard();
@@ -32,12 +33,24 @@ public:
 	bool ifBlocked(int pieceRow, int pieceCol, int moveRow, int moveCol);
 	int getWin();
 	void calculateAllMoves();
+	pair<int,int> lastMovedPiece();
+	void setCurrentTurn(int turn);
+	int getCurrentTurn();
+	void outputMoves();
+	int getMovesDiag(int pieceRow, int pieceCol, int moveRow, int moveCol);
+
 private:
+	int pieceRow;
+	int pieceCol;
+	int moveRow;
+	int moveCol;
 	int aiColor;
 	int playerColor;
-	int whitePieces = 5;
-	int blackPieces = 5;
-	string currentTurn;
+	int whitePieces;
+	int blackPieces;
+	int currentTurn;
 	int gameBoard[ROWS][COLS];
-	int win = 0;
+	int win;
+	int diagMoves;
+	vector<string> allMoves;
 };

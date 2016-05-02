@@ -4,6 +4,9 @@ using namespace std;
 
 Game::Game()
 {
+	win = 0;
+	blackPieces = 5;
+	whitePieces = 5;
 	for (int i = 0; i < 7; i++)
 	{
 		for (int j = 0; j < 7; j++)
@@ -25,9 +28,29 @@ int Game::getPlayer()
 	return playerColor;
 }
 
+int Game::getAI()
+{
+	return aiColor;
+}
+
+void Game::setCurrentTurn(int turn)
+{
+	currentTurn = turn;
+}
+
+int Game::getCurrentTurn()
+{
+	return currentTurn;
+}
+
 void Game::restart()
 {
-
+	system("cls");
+	Game();
+	win = 0;
+	aiColor = NULL;
+	playerColor = NULL;
+	currentTurn = 0;
 }
 
 void Game::setWhitePiecesNum(int num)
@@ -56,17 +79,32 @@ void Game::checkWin()
 	{ }
 }
 
-bool Game::playerMove(int pieceRow, int pieceCol, int moveRow, int moveCol)
+bool Game::playerMove()
 {
-	if (gameBoard[pieceRow][pieceCol] == playerColor && !ifBlocked(pieceRow, pieceCol, moveRow, moveCol) && checkMove(pieceRow, pieceCol, moveRow, moveCol) && gameBoard[moveRow][moveCol] == 0)
+	cout << "Please enter the row of the piece you would like to move: ";
+	cin >> pieceRow;
+	cout << "Please enter the col of the piece you would like to move: ";
+	cin >> pieceCol;
+	cout << "Please enter the row of where you would like to move: ";
+	cin >> moveRow;
+	cout << "Please enter the col of where you would like to move: ";
+	cin >> moveCol;
+	if (currentTurn == playerColor && gameBoard[pieceRow][pieceCol] == playerColor 
+		&& !ifBlocked(pieceRow, pieceCol, moveRow, moveCol) 
+		&& checkMove(pieceRow, pieceCol, moveRow, moveCol) 
+		&& gameBoard[moveRow][moveCol] == 0)
 	{
 		gameBoard[moveRow][moveCol] = gameBoard[pieceRow][pieceCol];
 		gameBoard[pieceRow][pieceCol] = 0;
+		checkWin();
+		setCurrentTurn(getAI());
 		return true;
 	}
 	else if (checkMove(pieceRow, pieceCol, moveRow, moveCol) && gameBoard[moveRow][moveCol] == aiColor)
 	{
 		capture(pieceRow, pieceCol, moveRow, moveCol);
+		checkWin();
+		setCurrentTurn(getAI());
 		return true;
 	}
 	else
@@ -83,15 +121,11 @@ bool Game::playerMove(int pieceRow, int pieceCol, int moveRow, int moveCol)
 	int j = pieceCol;
 	if (pieceRow - moveRow > 0 && pieceCol == moveCol)
 	{
-		cout << "test1 \n";
 		int spaceDiffRow = pieceRow - moveRow;
 		while (spaceDiffRow != 0)
 		{
-			cout << i << "x\n";
 			if (gameBoard[--i][pieceCol] == aiColor && spaceDiffRow > 1)
 			{
-				cout << i << "\n";
-				cout << spaceDiffRow << "\n";
 				return true;
 			}
 			spaceDiffRow--;
@@ -99,11 +133,10 @@ bool Game::playerMove(int pieceRow, int pieceCol, int moveRow, int moveCol)
 	}
 	else if (pieceCol - moveCol > 0 && pieceRow == moveRow)
 	{
-		cout << "test2 \n";
 		int spaceDiffCol = pieceCol - moveCol;
 		while (spaceDiffCol != 0)
 		{
-			if (gameBoard[pieceRow][--j] == aiColor && spaceDiffCol > 1)
+			if (gameBoard[pieceRow][--j] != getCurrentTurn() && gameBoard[pieceRow][j] != 0 && spaceDiffCol > 1)
 			{
 				return true;
 			}
@@ -112,11 +145,10 @@ bool Game::playerMove(int pieceRow, int pieceCol, int moveRow, int moveCol)
 	}
 	else if (pieceRow - moveRow < 0 && pieceCol == moveCol)
 	{
-		cout << "test3 \n";
 		int spaceDiffRow = abs(pieceRow - moveRow);
 		while (spaceDiffRow != 0)
 		{
-			if (gameBoard[++i][pieceCol] == aiColor && spaceDiffRow > 1)
+			if (gameBoard[++i][pieceCol] != getCurrentTurn() && gameBoard[i][pieceCol] != 0 && spaceDiffRow > 1)
 			{
 				return true;
 			}
@@ -125,13 +157,11 @@ bool Game::playerMove(int pieceRow, int pieceCol, int moveRow, int moveCol)
 	}
 	else if (pieceCol - moveCol < 0 && pieceRow == moveRow)
 	{
-		cout << "test4 \n";
 		int spaceDiffCol = abs(pieceCol - moveCol);
 		while (spaceDiffCol != 0)
 		{
-			if (gameBoard[pieceRow][++j] == aiColor && spaceDiffCol > 1)
+			if (gameBoard[pieceRow][++j] != getCurrentTurn() && gameBoard[pieceRow][j] != 0 && spaceDiffCol > 1)
 			{
-				cout << j;
 				return true;
 			}
 			spaceDiffCol--;
@@ -139,37 +169,33 @@ bool Game::playerMove(int pieceRow, int pieceCol, int moveRow, int moveCol)
 	}
 	else if (pieceRow > moveRow && pieceCol < moveCol)
 	{
-		cout << "test5 \n";
 		while(--i != moveRow && ++j != moveCol)
 		{
-			if (gameBoard[i][j] == aiColor)
+			if (gameBoard[i][j] != getCurrentTurn() && gameBoard[i][j] != 0)
 				return true;
 		}
 	}
 	else if (pieceRow > moveRow && pieceCol > moveCol)
 	{
-		cout << "test6 \n";
 		while (--i != moveRow && --j != moveCol)
 		{
-			if (gameBoard[i][j] == aiColor)
+			if (gameBoard[i][j] != getCurrentTurn() && gameBoard[i][j] != 0)
 				return true;
 		}
 	}
 	else if (pieceRow < moveRow && pieceCol < moveCol)
 	{
-		cout << "test7 \n";
 		while (++i != moveRow && ++j != moveCol)
 		{
-			if (gameBoard[i][j] == aiColor)
+			if (gameBoard[i][j] != getCurrentTurn() && gameBoard[i][j] != 0)
 				return true;
 		}
 	}
 	else if (pieceRow < moveRow && pieceCol > moveCol)
 	{
-		cout << "test8 \n";
 		while (++i != moveRow && --j != moveCol)
 		{
-			if (gameBoard[i][j] == aiColor)
+			if (gameBoard[i][j] != getCurrentTurn() && gameBoard[i][j] != 0)
 				return true;
 		}
 	}
@@ -192,31 +218,53 @@ void Game::capture(int pieceRow, int pieceCol, int moveRow, int moveCol)
 
 void Game::aiMove()
 {
-
+	calculateAllMoves();
+	outputMoves();
 }
 
 void Game::calculateAllMoves()
 {
-	vector<pair<int, int>> *allPieces;
+	vector<pair<int, int>> allPieces;
 	for (int i = 0; i < 7; i++)
 	{
 		for (int j = 0; j < 7; j++)
 		{
 			if (gameBoard[i][j] == aiColor)
-				allPieces->push_back(make_pair(i, j));
+				allPieces.push_back(make_pair(i, j));
 		}
 	}
 	int k = 0;
-	while (k < allPieces->size())
+	
+	for( vector<pair<int,int>>::iterator boardIt = allPieces.begin(); boardIt != allPieces.end(); ++boardIt)
 	{
 		for (int i = 0; i < 7; i++)
 		{
 			for (int j = 0; j < 7; j++)
 			{
-				if(checkMove(allPieces->first) == true)
+				int tempX = boardIt->first;
+				int tempY = boardIt->second;
+				if(checkMove(tempX, tempY, i, j) && !ifBlocked(tempX, tempY, i,j) && gameBoard[i][j] != aiColor)
+				{
+					string move = to_string(tempX) + to_string(tempY) + to_string(i) + to_string(j);
+					allMoves.push_back(move);
+				}
 			}
 		}
 	}
+	cout << allMoves.size();
+}
+
+void Game::outputMoves()
+{
+	for(int i = 0; i < allMoves.size();i++)
+	{
+		cout << allMoves[i] << endl;
+	}
+}
+
+pair<int,int> lastMovedPiece(int pieceRow, int pieceCol)
+{
+	return make_pair(pieceRow,pieceCol);
 }
 
 int Game::getMovesRow(int pieceCol)
@@ -241,6 +289,74 @@ int Game::getMovesCol(int pieceRow)
 	return numMoves;
 }
 
+int Game::getMovesDiag(int pieceRow, int pieceCol, int moveRow, int moveCol)
+{
+	diagMoves = 0;
+	int i = pieceRow;
+	int j = pieceCol;
+	if(pieceRow < moveRow && pieceCol < moveCol)
+	{
+		while (i > 2 && i < 7 && j > 2 && j < 7)
+		{
+			if (gameBoard[i--][j--] != 0)
+				diagMoves++;
+		}
+		int i = pieceRow;
+		int j = pieceCol;
+		while (i >= 0 && i < 7 && j >= 0 && j < 7)
+		{
+			if (gameBoard[i++][j++] != 0)
+				diagMoves++;
+		}
+	}
+	else if(pieceRow < moveRow && pieceCol > moveCol)
+	{
+		while (i > 2 && i < 7 && j > 2 && j < 7)
+		{
+			if (gameBoard[i--][j++] != 0)
+				diagMoves++;
+		}
+		int i = pieceRow;
+		int j = pieceCol;
+		while (i >= 0 && i < 7 && j >= 0 && j < 7)
+		{
+			if (gameBoard[i++][j--] != 0)
+				diagMoves++;
+		}
+	}
+	else if(pieceRow > moveRow && pieceCol < moveCol)
+	{
+		while (i > 2 && i < 7 && j > 2 && j < 7)
+		{
+			if (gameBoard[i++][j--] != 0)
+				diagMoves++;
+		}
+		int i = pieceRow;
+		int j = pieceCol;
+		while (i >= 0 && i < 7 && j >= 0 && j < 7)
+		{
+			if (gameBoard[i--][j++] != 0)
+				diagMoves++;
+		}
+	}
+	else if(pieceRow > moveRow && pieceCol > moveCol)
+	{
+		while (i > 2 && i < 7 && j > 2 && j < 7)
+		{
+			if (gameBoard[i++][j++] != 0)
+				diagMoves++;
+		}
+		int i = pieceRow;
+		int j = pieceCol;
+		while (i >= 0 && i < 7 && j >= 0 && j < 7)
+		{
+			if (gameBoard[i--][j--] != 0)
+				diagMoves++;
+		}
+	}
+	return diagMoves;
+}
+
 bool Game::checkMove(int pieceRow, int pieceCol, int moveRow, int moveCol)
 {
 	bool checkRow = false;
@@ -262,15 +378,33 @@ bool Game::checkMove(int pieceRow, int pieceCol, int moveRow, int moveCol)
 	}
 	else if ((pieceCol + moveCol + pieceRow + moveRow) % 2 == 0)
 	{
-		while (i > 2 && i < 7 && j > 2 && j < 7)
+		if(abs(pieceRow - pieceCol) == abs(moveRow - moveCol) && pieceRow > moveRow && pieceCol > moveCol)
 		{
-			if (gameBoard[i--][j--] != 0)
-				checkDiag = true;
+			int spaceDiff = abs(pieceRow - moveRow);
+			int x = getMovesDiag(pieceRow, pieceCol, moveRow, moveCol);
+			if(spaceDiff < x)
+				return true;
 		}
-		while (i >= 0 && i < 7 && j >= 0 && j < 7)
+		else if(pieceRow + pieceCol == moveRow + moveCol && pieceRow > moveRow)
 		{
-			if (gameBoard[i++][j++] != 0)
-				checkDiag = true;
+			int spaceDiff = abs(pieceRow - moveRow);
+			int x = getMovesDiag(pieceRow, pieceCol, moveRow, moveCol);
+			if(spaceDiff < x)
+				return true;
+		}
+		else if(pieceRow + pieceCol == moveRow + moveCol && pieceRow < moveRow)
+		{
+			int spaceDiff = abs(pieceRow - moveRow);
+			int x = getMovesDiag(pieceRow, pieceCol, moveRow, moveCol);
+			if(spaceDiff < x)
+				return true;
+		}
+		else if(abs(pieceRow - moveRow) == abs(pieceCol - moveCol) && pieceRow < moveRow)
+		{
+			int spaceDiff = abs(pieceRow - moveRow);
+			int x = getMovesDiag(pieceRow, pieceCol, moveRow, moveCol);
+			if(spaceDiff < x)
+				return true;
 		}
 	}
 	if (checkRow || checkCol || checkDiag)
@@ -284,9 +418,15 @@ void Game::printBoard()
 		cout << "Select 1 for black and 2 for white: ";
 		cin >> playerColor;
 		if (playerColor == 1)
+		{
 			aiColor = 2;
+			currentTurn = aiColor;
+		}
 		else
+		{
 			aiColor = 1;
+			currentTurn = playerColor;
+		}
 	}
 	for (int k = 0; k < 7; k++)
 	{

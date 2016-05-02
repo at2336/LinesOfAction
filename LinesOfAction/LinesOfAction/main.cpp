@@ -4,26 +4,25 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	Game game;
+	cout << "0 is an empty tile" << endl;
+	cout << "1 is white piece" << endl;
+	cout << "2 is black piece" << endl;
+	cout << endl;
 	while (game.getWin() == 0)
 	{
 		game.printBoard();
-		int pieceRow;
-		int pieceCol;
-		int moveRow;
-		int moveCol;
-		cout << "Please enter the row of the piece you would like to move: ";
-		cin >> pieceRow;
-		cout << "Please enter the col of the piece you would like to move: ";
-		cin >> pieceCol;
-		cout << "Please enter the row of where you would like to move: ";
-		cin >> moveRow;
-		cout << "Please enter the col of where you would like to move: ";
-		cin >> moveCol;
-		if (game.playerMove(pieceRow, pieceCol, moveRow, moveCol))
+		if(game.getCurrentTurn() == game.getPlayer())
 		{
-			game.checkWin();
+			game.setCurrentTurn(game.getPlayer());
+			cout << game.getCurrentTurn();
+			game.playerMove();
+		}
+		else if(game.getCurrentTurn() == game.getAI())
+		{
+			game.setCurrentTurn(game.getAI());
 			game.aiMove();
 			game.checkWin();
+			game.setCurrentTurn(game.getPlayer());
 		}
 	}
 }
