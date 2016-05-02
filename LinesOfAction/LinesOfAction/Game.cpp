@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <vector>
 using namespace std;
 
 Game::Game()
@@ -57,7 +58,7 @@ void Game::checkWin()
 
 bool Game::playerMove(int pieceRow, int pieceCol, int moveRow, int moveCol)
 {
-	if (gameBoard[pieceRow][pieceCol] == playerColor && checkMove(pieceRow, pieceCol, moveRow, moveCol) && gameBoard[moveRow][moveCol] == 0)
+	if (gameBoard[pieceRow][pieceCol] == playerColor && !ifBlocked(pieceRow, pieceCol, moveRow, moveCol) && checkMove(pieceRow, pieceCol, moveRow, moveCol) && gameBoard[moveRow][moveCol] == 0)
 	{
 		gameBoard[moveRow][moveCol] = gameBoard[pieceRow][pieceCol];
 		gameBoard[pieceRow][pieceCol] = 0;
@@ -80,52 +81,96 @@ bool Game::playerMove(int pieceRow, int pieceCol, int moveRow, int moveCol)
 	bool blocked = false;
 	int i = pieceRow;
 	int j = pieceCol;
-	if (pieceRow - moveRow > 0)
+	if (pieceRow - moveRow > 0 && pieceCol == moveCol)
 	{
+		cout << "test1 \n";
 		int spaceDiffRow = pieceRow - moveRow;
 		while (spaceDiffRow != 0)
 		{
-			if (gameBoard[i--][pieceCol] == aiColor && spaceDiffRow > 1)
+			cout << i << "x\n";
+			if (gameBoard[--i][pieceCol] == aiColor && spaceDiffRow > 1)
 			{
+				cout << i << "\n";
+				cout << spaceDiffRow << "\n";
 				return true;
 			}
 			spaceDiffRow--;
 		}
 	}
-	else if (pieceCol - moveCol > 0)
+	else if (pieceCol - moveCol > 0 && pieceRow == moveRow)
 	{
+		cout << "test2 \n";
 		int spaceDiffCol = pieceCol - moveCol;
 		while (spaceDiffCol != 0)
 		{
-			if (gameBoard[pieceRow][j--] == aiColor && spaceDiffCol > 1)
+			if (gameBoard[pieceRow][--j] == aiColor && spaceDiffCol > 1)
 			{
 				return true;
 			}
 			spaceDiffCol--;
 		}
 	}
-	else if (pieceRow - moveRow < 0)
+	else if (pieceRow - moveRow < 0 && pieceCol == moveCol)
 	{
-		int spaceDiffRow = moveRow - pieceRow;
+		cout << "test3 \n";
+		int spaceDiffRow = abs(pieceRow - moveRow);
 		while (spaceDiffRow != 0)
 		{
-			if (gameBoard[i++][pieceCol] == aiColor && spaceDiffRow > 1)
+			if (gameBoard[++i][pieceCol] == aiColor && spaceDiffRow > 1)
 			{
 				return true;
 			}
-			spaceDiffRow++;
+			spaceDiffRow--;
 		}
 	}
-	else if (pieceCol - moveCol < 0)
+	else if (pieceCol - moveCol < 0 && pieceRow == moveRow)
 	{
-		int spaceDiffCol = pieceCol - moveCol;
+		cout << "test4 \n";
+		int spaceDiffCol = abs(pieceCol - moveCol);
 		while (spaceDiffCol != 0)
 		{
-			if (gameBoard[pieceRow][j++] == aiColor && spaceDiffCol > 1)
+			if (gameBoard[pieceRow][++j] == aiColor && spaceDiffCol > 1)
 			{
+				cout << j;
 				return true;
 			}
-			spaceDiffCol++;
+			spaceDiffCol--;
+		}
+	}
+	else if (pieceRow > moveRow && pieceCol < moveCol)
+	{
+		cout << "test5 \n";
+		while(--i != moveRow && ++j != moveCol)
+		{
+			if (gameBoard[i][j] == aiColor)
+				return true;
+		}
+	}
+	else if (pieceRow > moveRow && pieceCol > moveCol)
+	{
+		cout << "test6 \n";
+		while (--i != moveRow && --j != moveCol)
+		{
+			if (gameBoard[i][j] == aiColor)
+				return true;
+		}
+	}
+	else if (pieceRow < moveRow && pieceCol < moveCol)
+	{
+		cout << "test7 \n";
+		while (++i != moveRow && ++j != moveCol)
+		{
+			if (gameBoard[i][j] == aiColor)
+				return true;
+		}
+	}
+	else if (pieceRow < moveRow && pieceCol > moveCol)
+	{
+		cout << "test8 \n";
+		while (++i != moveRow && --j != moveCol)
+		{
+			if (gameBoard[i][j] == aiColor)
+				return true;
 		}
 	}
 	return false;
@@ -148,6 +193,30 @@ void Game::capture(int pieceRow, int pieceCol, int moveRow, int moveCol)
 void Game::aiMove()
 {
 
+}
+
+void Game::calculateAllMoves()
+{
+	vector<pair<int, int>> *allPieces;
+	for (int i = 0; i < 7; i++)
+	{
+		for (int j = 0; j < 7; j++)
+		{
+			if (gameBoard[i][j] == aiColor)
+				allPieces->push_back(make_pair(i, j));
+		}
+	}
+	int k = 0;
+	while (k < allPieces->size())
+	{
+		for (int i = 0; i < 7; i++)
+		{
+			for (int j = 0; j < 7; j++)
+			{
+				if(checkMove(allPieces->first) == true)
+			}
+		}
+	}
 }
 
 int Game::getMovesRow(int pieceCol)

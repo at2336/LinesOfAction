@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 using namespace std;
 
@@ -30,6 +31,7 @@ public:
 	int getMovesCol(int pieceCol);
 	bool ifBlocked(int pieceRow, int pieceCol, int moveRow, int moveCol);
 	int getWin();
+	void calculateAllMoves();
 private:
 	int aiColor;
 	int playerColor;
