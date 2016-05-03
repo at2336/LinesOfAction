@@ -1,7 +1,4 @@
 ﻿  Game.cpp
-  Generating Code...
-c:\users\alex\desktop\linesofaction\linesofaction\linesofaction\game.cpp(258): warning C4715: 'Game::checkMove': not all control paths return a value
-  Compiling...
-  main.cpp
-  Generating Code...
+c:\users\alex\desktop\linesofaction\linesofaction\linesofaction\game.cpp(259): warning C4018: '<' : signed/unsigned mismatch
+c:\users\alex\desktop\linesofaction\linesofaction\linesofaction\game.cpp(435): warning C4715: 'Game::checkMove' : not all control paths return a value
   LinesOfAction.vcxproj -> C:\Users\Alex\Desktop\LinesOfAction\LinesOfAction\Debug\LinesOfAction.exe

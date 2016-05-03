@@ -224,6 +224,7 @@ void Game::aiMove()
 
 void Game::calculateAllMoves()
 {
+	allMoves.clear();
 	vector<pair<int, int>> allPieces;
 	for (int i = 0; i < 7; i++)
 	{
@@ -251,7 +252,6 @@ void Game::calculateAllMoves()
 			}
 		}
 	}
-	cout << allMoves.size();
 }
 
 void Game::outputMoves()
@@ -260,6 +260,7 @@ void Game::outputMoves()
 	{
 		cout << allMoves[i] << endl;
 	}
+	cout << allMoves.size() << endl;
 }
 
 pair<int,int> lastMovedPiece(int pieceRow, int pieceCol)
@@ -294,70 +295,92 @@ int Game::getMovesDiag(int pieceRow, int pieceCol, int moveRow, int moveCol)
 	diagMoves = 0;
 	int i = pieceRow;
 	int j = pieceCol;
-	if(pieceRow < moveRow && pieceCol < moveCol)
+	if(pieceRow < moveRow && pieceCol < moveCol) //lower right
 	{
-		while (i > 2 && i < 7 && j > 2 && j < 7)
+		if (i == 0 || j == 0 && gameBoard[i][j] != 0)
+			diagMoves++;
+		while (i > 0 && i <= 7 && j > 0 && j <= 7)
 		{
 			if (gameBoard[i--][j--] != 0)
 				diagMoves++;
 		}
 		int i = pieceRow;
 		int j = pieceCol;
+		if (i == 7 || j == 7 && gameBoard[i][j] != 0)
+			diagMoves++;
 		while (i >= 0 && i < 7 && j >= 0 && j < 7)
 		{
-			if (gameBoard[i++][j++] != 0)
+			if (gameBoard[++i][++j] != 0)
+			{
 				diagMoves++;
+			}
 		}
 	}
-	else if(pieceRow < moveRow && pieceCol > moveCol)
+	else if(pieceRow < moveRow && pieceCol > moveCol) //lower left
 	{
-		while (i > 2 && i < 7 && j > 2 && j < 7)
+		if(i == 0 || j == 7 && gameBoard[i][j] != 0)
+			diagMoves++;
+		while (i > 0 && i <= 7 && j >= 0 && j < 7)
 		{
 			if (gameBoard[i--][j++] != 0)
 				diagMoves++;
 		}
 		int i = pieceRow;
 		int j = pieceCol;
-		while (i >= 0 && i < 7 && j >= 0 && j < 7)
+		if(i == 7 || j == 0 && gameBoard[i][j] != 0)
+			diagMoves++;
+		while (i >= 0 && i < 7 && j > 0 && j <= 7)
 		{
-			if (gameBoard[i++][j--] != 0)
+			if (gameBoard[++i][--j] != 0)
 				diagMoves++;
 		}
 	}
-	else if(pieceRow > moveRow && pieceCol < moveCol)
+	else if(pieceRow > moveRow && pieceCol < moveCol) //upper right
 	{
-		while (i > 2 && i < 7 && j > 2 && j < 7)
+		if(i == 7 || j == 0 && gameBoard[i][j] != 0)
+			diagMoves++;
+		while (i > 0 && i < 7 && j > 0 && j <= 7)
 		{
 			if (gameBoard[i++][j--] != 0)
+			{
 				diagMoves++;
+			}
 		}
 		int i = pieceRow;
 		int j = pieceCol;
-		while (i >= 0 && i < 7 && j >= 0 && j < 7)
+		if(i == 0 || j == 7 && gameBoard[i][j] != 0)
+			diagMoves++;
+		while (i > 1 && i <= 7 && j > 0 && j < 7)
 		{
-			if (gameBoard[i--][j++] != 0)
-				diagMoves++;
+			if (gameBoard[--i][++j] != 0)
+			{
+					diagMoves++;
+			}
 		}
 	}
-	else if(pieceRow > moveRow && pieceCol > moveCol)
+	else if(pieceRow > moveRow && pieceCol > moveCol) //upper left
 	{
-		while (i > 2 && i < 7 && j > 2 && j < 7)
+		if(i == 7 || j == 7 && gameBoard[i][j] != 0)
+			diagMoves++;
+		while (i >= 0 && i < 7 && j >= 0 && j < 7)
 		{
 			if (gameBoard[i++][j++] != 0)
 				diagMoves++;
 		}
 		int i = pieceRow;
 		int j = pieceCol;
-		while (i >= 0 && i < 7 && j >= 0 && j < 7)
+		if(i == 0 || j == 0 && gameBoard[i][j] != 0)
+			diagMoves++;
+		while (i > 0 && i <= 7 && j > 0 && j <= 7)
 		{
-			if (gameBoard[i--][j--] != 0)
+			if (gameBoard[--i][--j] != 0)
 				diagMoves++;
 		}
 	}
 	return diagMoves;
 }
 
-bool Game::checkMove(int pieceRow, int pieceCol, int moveRow, int moveCol)
+bool Game::checkMove(int pieceRow, int pieceCol, int moveRow, int moveCol) //Checks if such a move is possible based on # of pieces & position
 {
 	bool checkRow = false;
 	bool checkCol = false;
@@ -378,32 +401,32 @@ bool Game::checkMove(int pieceRow, int pieceCol, int moveRow, int moveCol)
 	}
 	else if ((pieceCol + moveCol + pieceRow + moveRow) % 2 == 0)
 	{
-		if(abs(pieceRow - pieceCol) == abs(moveRow - moveCol) && pieceRow > moveRow && pieceCol > moveCol)
+		if(abs(pieceRow - pieceCol) == abs(moveRow - moveCol) && pieceRow > moveRow && pieceCol > moveCol) //upper left
 		{
 			int spaceDiff = abs(pieceRow - moveRow);
 			int x = getMovesDiag(pieceRow, pieceCol, moveRow, moveCol);
-			if(spaceDiff < x)
+			if(spaceDiff <= x)
 				return true;
 		}
-		else if(pieceRow + pieceCol == moveRow + moveCol && pieceRow > moveRow)
+		else if(pieceRow + pieceCol == moveRow + moveCol && pieceRow > moveRow) //bottom left
 		{
 			int spaceDiff = abs(pieceRow - moveRow);
 			int x = getMovesDiag(pieceRow, pieceCol, moveRow, moveCol);
-			if(spaceDiff < x)
+			if(spaceDiff <= x)
 				return true;
 		}
-		else if(pieceRow + pieceCol == moveRow + moveCol && pieceRow < moveRow)
+		else if(pieceRow + pieceCol == moveRow + moveCol && pieceRow < moveRow) //upper right
 		{
 			int spaceDiff = abs(pieceRow - moveRow);
 			int x = getMovesDiag(pieceRow, pieceCol, moveRow, moveCol);
-			if(spaceDiff < x)
+			if(spaceDiff <= x)
 				return true;
 		}
-		else if(abs(pieceRow - moveRow) == abs(pieceCol - moveCol) && pieceRow < moveRow)
+		else if(abs(pieceRow - moveRow) == abs(pieceCol - moveCol) && pieceRow < moveRow) //bottom right
 		{
 			int spaceDiff = abs(pieceRow - moveRow);
 			int x = getMovesDiag(pieceRow, pieceCol, moveRow, moveCol);
-			if(spaceDiff < x)
+			if(spaceDiff <= x)
 				return true;
 		}
 	}
