@@ -2,48 +2,48 @@
 #include <vector>
 using namespace std;
 
-Game::Game()
+Game::Game()  //constructor for game
 {
 	win = 0;
-	blackPieces = 5;
-	whitePieces = 5;
-	for (int i = 0; i < 7; i++)
+	blackPieces = 3;
+	whitePieces = 3;
+	for (int i = 0; i < 5; i++)
 	{
-		for (int j = 0; j < 7; j++)
+		for (int j = 0; j < 5; j++)
 		{
 			gameBoard[i][j] = 0;
 		}
 	}
-	for (int i = 1; i < 6; i++)
+	for (int i = 1; i < 4; i++)
 	{
 		gameBoard[i][0] = 1;
-		gameBoard[i][6] = 1;
+		gameBoard[i][4] = 1;
 		gameBoard[0][i] = 2;
-		gameBoard[6][i] = 2;
+		gameBoard[4][i] = 2;
 	}
 }
 
-int Game::getPlayer()
+int Game::getPlayer()  //returns player's color
 {
 	return playerColor;
 }
 
-int Game::getAI()
+int Game::getAI()  //returns AI's color
 {
 	return aiColor;
 }
 
-void Game::setCurrentTurn(int turn)
+void Game::setCurrentTurn(int turn)  //set the current color's turn
 {
 	currentTurn = turn;
 }
 
-int Game::getCurrentTurn()
+int Game::getCurrentTurn() //returns the current player's turn
 {
 	return currentTurn;
 }
 
-void Game::restart()
+void Game::restart()  //restarts the game
 {
 	system("cls");
 	Game();
@@ -53,33 +53,36 @@ void Game::restart()
 	currentTurn = 0;
 }
 
-void Game::setWhitePiecesNum(int num)
+void Game::setWhitePiecesNum(int num)  //Sets the number of white pieces
 {
 	whitePieces = num;
 }
 
-void Game::setBlackPiecesNum(int num)
+void Game::setBlackPiecesNum(int num)  //Sets the number of black pieces
 {
 	blackPieces = num;
 }
 
-int Game::getBlackPieces()
+int Game::getBlackPieces()  //Returns the number of black pieces
 {
 	return blackPieces;
 }
 
-int Game::getWhitePieces()
+int Game::getWhitePieces()  //Returns the number of white pieces
 {
 	return whitePieces;
 }
 
-void Game::checkWin()
+void Game::checkWin()  //Checks if some won
 {
-	if(true)
-	{ }
+	if(whitePieces == 1)
+		win = 2;
+	else if(blackPieces == 1)
+		win = 1;
+
 }
 
-bool Game::playerMove()
+bool Game::playerMove()  //Make the player move
 {
 	cout << "Please enter the row of the piece you would like to move: ";
 	cin >> pieceRow;
@@ -114,7 +117,7 @@ bool Game::playerMove()
 	}
 }
 
- bool Game::ifBlocked(int pieceRow, int pieceCol, int moveRow, int moveCol)
+ bool Game::ifBlocked(int pieceRow, int pieceCol, int moveRow, int moveCol)  //Checks if a piece is blocked when attempting to make move
 {
 	bool blocked = false;
 	int i = pieceRow;
@@ -202,7 +205,7 @@ bool Game::playerMove()
 	return false;
 }
 
-void Game::capture(int pieceRow, int pieceCol, int moveRow, int moveCol)
+void Game::capture(int pieceRow, int pieceCol, int moveRow, int moveCol) //Captures an enemy piece
 {
 	if (checkMove(pieceRow, pieceCol, moveRow, moveCol) && gameBoard[moveRow][moveCol] != gameBoard[pieceRow][pieceCol] && gameBoard[moveRow][moveCol] != 0)
 	{
@@ -216,19 +219,19 @@ void Game::capture(int pieceRow, int pieceCol, int moveRow, int moveCol)
 	}
 }
 
-void Game::aiMove()
+void Game::aiMove()  //AI's turn. Calculates all possible moves and chooses best one
 {
 	calculateAllMoves();
 	outputMoves();
 }
 
-void Game::calculateAllMoves()
+void Game::calculateAllMoves()  //Calculates all possible moves based on board
 {
 	allMoves.clear();
 	vector<pair<int, int>> allPieces;
-	for (int i = 0; i < 7; i++)
+	for (int i = 0; i < 5; i++)
 	{
-		for (int j = 0; j < 7; j++)
+		for (int j = 0; j < 5; j++)
 		{
 			if (gameBoard[i][j] == aiColor)
 				allPieces.push_back(make_pair(i, j));
@@ -238,9 +241,9 @@ void Game::calculateAllMoves()
 	
 	for( vector<pair<int,int>>::iterator boardIt = allPieces.begin(); boardIt != allPieces.end(); ++boardIt)
 	{
-		for (int i = 0; i < 7; i++)
+		for (int i = 0; i < 5; i++)
 		{
-			for (int j = 0; j < 7; j++)
+			for (int j = 0; j < 5; j++)
 			{
 				int tempX = boardIt->first;
 				int tempY = boardIt->second;
@@ -254,7 +257,7 @@ void Game::calculateAllMoves()
 	}
 }
 
-void Game::outputMoves()
+void Game::outputMoves()  //Outputs list of moves
 {
 	for(int i = 0; i < allMoves.size();i++)
 	{
@@ -263,15 +266,15 @@ void Game::outputMoves()
 	cout << allMoves.size() << endl;
 }
 
-pair<int,int> lastMovedPiece(int pieceRow, int pieceCol)
+void Game::lastMovedPiece(int pieceRow, int pieceCol)  //Stores the last moved piece 
 {
-	return make_pair(pieceRow,pieceCol);
+	 lastMoved = to_string(pieceRow) + to_string(pieceCol);
 }
 
-int Game::getMovesRow(int pieceCol)
+int Game::getMovesRow(int pieceCol) //Gets the number of steps possible horizontally for a piece
 {
 	int numMoves = 0;
-	for (int i = 0; i < 7; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		if (gameBoard[i][pieceCol] != 0)
 			numMoves++;
@@ -279,10 +282,10 @@ int Game::getMovesRow(int pieceCol)
 	return numMoves;
 }
 
-int Game::getMovesCol(int pieceRow)
+int Game::getMovesCol(int pieceRow)  //Returns the number of steps possible vertically for a piece
 {
 	int numMoves = 0;
-	for (int i = 0; i < 7; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		if (gameBoard[pieceRow][i] != 0)
 			numMoves++;
@@ -290,7 +293,7 @@ int Game::getMovesCol(int pieceRow)
 	return numMoves;
 }
 
-int Game::getMovesDiag(int pieceRow, int pieceCol, int moveRow, int moveCol)
+int Game::getMovesDiag(int pieceRow, int pieceCol, int moveRow, int moveCol)  //returns the number of steps possible diagonally
 {
 	diagMoves = 0;
 	int i = pieceRow;
@@ -299,16 +302,16 @@ int Game::getMovesDiag(int pieceRow, int pieceCol, int moveRow, int moveCol)
 	{
 		if (i == 0 || j == 0 && gameBoard[i][j] != 0)
 			diagMoves++;
-		while (i > 0 && i <= 7 && j > 0 && j <= 7)
+		while (i > 0 && i <= 5 && j > 0 && j <= 5)
 		{
 			if (gameBoard[i--][j--] != 0)
 				diagMoves++;
 		}
 		int i = pieceRow;
 		int j = pieceCol;
-		if (i == 7 || j == 7 && gameBoard[i][j] != 0)
+		if (i == 5 || j == 5 && gameBoard[i][j] != 0)
 			diagMoves++;
-		while (i >= 0 && i < 7 && j >= 0 && j < 7)
+		while (i >= 0 && i < 5 && j >= 0 && j < 5)
 		{
 			if (gameBoard[++i][++j] != 0)
 			{
@@ -318,18 +321,18 @@ int Game::getMovesDiag(int pieceRow, int pieceCol, int moveRow, int moveCol)
 	}
 	else if(pieceRow < moveRow && pieceCol > moveCol) //lower left
 	{
-		if(i == 0 || j == 7 && gameBoard[i][j] != 0)
+		if(i == 0 || j == 5 && gameBoard[i][j] != 0)
 			diagMoves++;
-		while (i > 0 && i <= 7 && j >= 0 && j < 7)
+		while (i > 0 && i <= 5 && j >= 0 && j < 5)
 		{
 			if (gameBoard[i--][j++] != 0)
 				diagMoves++;
 		}
 		int i = pieceRow;
 		int j = pieceCol;
-		if(i == 7 || j == 0 && gameBoard[i][j] != 0)
+		if(i == 5 || j == 0 && gameBoard[i][j] != 0)
 			diagMoves++;
-		while (i >= 0 && i < 7 && j > 0 && j <= 7)
+		while (i >= 0 && i < 5 && j > 0 && j <= 5)
 		{
 			if (gameBoard[++i][--j] != 0)
 				diagMoves++;
@@ -337,9 +340,9 @@ int Game::getMovesDiag(int pieceRow, int pieceCol, int moveRow, int moveCol)
 	}
 	else if(pieceRow > moveRow && pieceCol < moveCol) //upper right
 	{
-		if(i == 7 || j == 0 && gameBoard[i][j] != 0)
+		if(i == 5 || j == 0 && gameBoard[i][j] != 0)
 			diagMoves++;
-		while (i > 0 && i < 7 && j > 0 && j <= 7)
+		while (i > 0 && i < 5 && j > 0 && j <= 5)
 		{
 			if (gameBoard[i++][j--] != 0)
 			{
@@ -348,9 +351,9 @@ int Game::getMovesDiag(int pieceRow, int pieceCol, int moveRow, int moveCol)
 		}
 		int i = pieceRow;
 		int j = pieceCol;
-		if(i == 0 || j == 7 && gameBoard[i][j] != 0)
+		if(i == 0 || j == 5 && gameBoard[i][j] != 0)
 			diagMoves++;
-		while (i > 1 && i <= 7 && j > 0 && j < 7)
+		while (i > 1 && i <= 5 && j > 0 && j < 5)
 		{
 			if (gameBoard[--i][++j] != 0)
 			{
@@ -360,9 +363,9 @@ int Game::getMovesDiag(int pieceRow, int pieceCol, int moveRow, int moveCol)
 	}
 	else if(pieceRow > moveRow && pieceCol > moveCol) //upper left
 	{
-		if(i == 7 || j == 7 && gameBoard[i][j] != 0)
+		if(i == 5 || j == 5 && gameBoard[i][j] != 0)
 			diagMoves++;
-		while (i >= 0 && i < 7 && j >= 0 && j < 7)
+		while (i >= 0 && i < 5 && j >= 0 && j < 5)
 		{
 			if (gameBoard[i++][j++] != 0)
 				diagMoves++;
@@ -371,7 +374,7 @@ int Game::getMovesDiag(int pieceRow, int pieceCol, int moveRow, int moveCol)
 		int j = pieceCol;
 		if(i == 0 || j == 0 && gameBoard[i][j] != 0)
 			diagMoves++;
-		while (i > 0 && i <= 7 && j > 0 && j <= 7)
+		while (i > 0 && i <= 5 && j > 0 && j <= 5)
 		{
 			if (gameBoard[--i][--j] != 0)
 				diagMoves++;
@@ -434,7 +437,7 @@ bool Game::checkMove(int pieceRow, int pieceCol, int moveRow, int moveCol) //Che
 		return true;
 }
 
-void Game::printBoard()
+void Game::printBoard()  //prints the board
 {
 	if (playerColor < 1)
 	{
@@ -443,15 +446,15 @@ void Game::printBoard()
 		if (playerColor == 1)
 		{
 			aiColor = 2;
-			currentTurn = aiColor;
+			currentTurn = playerColor;
 		}
 		else
 		{
 			aiColor = 1;
-			currentTurn = playerColor;
+			currentTurn = aiColor;
 		}
 	}
-	for (int k = 0; k < 7; k++)
+	for (int k = 0; k < 5; k++)
 	{
 		if (k > 0)
 			cout << " " << k;
@@ -459,17 +462,17 @@ void Game::printBoard()
 			cout << "  " << k;
 	}
 	cout << "\n";
-	for (int i = 0; i<7; i++)    //This loops on the rows.
+	for (int i = 0; i<5; i++)    //This loops on the rows.
 	{
 		cout << i << " ";
-		for (int j = 0; j<7; j++) //This loops on the columns
+		for (int j = 0; j<5; j++) //This loops on the columns
 		{
 			cout << gameBoard[i][j] << " ";
 		}
 		cout << endl;
 	}
 }
-int Game::getWin()
+int Game::getWin()  //Returns the winner's color
 {
 	return win;
 }

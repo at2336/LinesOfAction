@@ -38,7 +38,7 @@ public:
 	int getCurrentTurn();
 	void outputMoves();
 	int getMovesDiag(int pieceRow, int pieceCol, int moveRow, int moveCol);
-
+	void lastMovedPiece(int pieceRow, int pieceCol);
 private:
 	int pieceRow;
 	int pieceCol;
@@ -52,5 +52,6 @@ private:
 	int gameBoard[ROWS][COLS];
 	int win;
 	int diagMoves;
+	string lastMoved;
 	vector<string> allMoves;
 };
