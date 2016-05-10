@@ -102,7 +102,7 @@ int Game::evaluate(int tempBoard[ROWS][COLS]) //Evaluation function used for alp
 		if (distance > maxDist)
 			maxDist = distance;
 	}
-	return maxDist + depth;
+	return -maxDist + depth;
 }
 
 pair<pair<int, int>,pair<int,int>> Game::alphaBeta() //Alphabeta search used for AI to move
