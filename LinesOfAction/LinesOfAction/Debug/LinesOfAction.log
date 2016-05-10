@@ -1,4 +1,7 @@
 ﻿  Game.cpp
-c:\users\alex\desktop\linesofaction\linesofaction\linesofaction\game.cpp(259): warning C4018: '<' : signed/unsigned mismatch
-c:\users\alex\desktop\linesofaction\linesofaction\linesofaction\game.cpp(435): warning C4715: 'Game::checkMove' : not all control paths return a value
+c:\users\alex\desktop\linesofaction\linesofaction\linesofaction\game.cpp(108): warning C4804: '>=' : unsafe use of type 'bool' in operation
+c:\users\alex\desktop\linesofaction\linesofaction\linesofaction\game.cpp(144): warning C4018: '<' : signed/unsigned mismatch
+c:\users\alex\desktop\linesofaction\linesofaction\linesofaction\game.cpp(186): warning C4018: '<' : signed/unsigned mismatch
+c:\users\alex\desktop\linesofaction\linesofaction\linesofaction\game.cpp(231): warning C4018: '<' : signed/unsigned mismatch
+c:\users\alex\desktop\linesofaction\linesofaction\linesofaction\game.cpp(870): warning C4715: 'Game::checkMove' : not all control paths return a value
   LinesOfAction.vcxproj -> C:\Users\Alex\Desktop\LinesOfAction\LinesOfAction\Debug\LinesOfAction.exe
