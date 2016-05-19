@@ -86,7 +86,7 @@ int Game::evaluate(int tempBoard[ROWS][COLS]) //Evaluation function used for alp
 		}
 	}
 	int count = 1;
-	int distance;
+	int distance = 0;
 	int maxDist = INT_MIN;
 	while (!myList.empty())
 	{
@@ -102,7 +102,7 @@ int Game::evaluate(int tempBoard[ROWS][COLS]) //Evaluation function used for alp
 		if (distance > maxDist)
 			maxDist = distance;
 	}
-	return -maxDist + depth;
+	return -1 * (maxDist * 10);
 }
 
 pair<pair<int, int>,pair<int,int>> Game::alphaBeta() //Alphabeta search used for AI to move
@@ -126,6 +126,8 @@ pair<pair<int,int>,pair<int,int>> Game::action(int maxUtil, int minUtil, int dep
 {
 	timer = clock();
 	int value = INT_MIN;
+	int alpha = maxUtil;
+	int beta = minUtil;
 	int pieceRow;
 	int pieceCol;
 	int moveRow;
@@ -143,18 +145,14 @@ pair<pair<int,int>,pair<int,int>> Game::action(int maxUtil, int minUtil, int dep
 			}
 		}
 		int val = value;
-		pieceRow = allMoves[0].first.first;
-		pieceCol = allMoves[0].first.second;
-		moveRow = allMoves[0].second.first;
-		moveCol = allMoves[0].second.second;
-		movePiece(tempBoard, pieceRow, pieceCol, moveRow, moveCol);
 		maxDepth++;
 		nodes++;
-		value = max(value, minVal(tempBoard, maxUtil, minUtil, depth+1));
-		if (val > value)
+		value = max(value, minVal(tempBoard, alpha, beta, depth+1));
+		if (value > val)
 			bestMove = allMoves[x];
+		alpha = max(alpha, value);
 	}
-	return make_pair(make_pair(pieceRow, pieceCol), make_pair(moveRow, moveCol));
+	return bestMove;
 }
 
 int Game::maxVal(int tempBoard[ROWS][COLS], int alpha, int beta, int depth) //Searches for max value in alpha-beta. Creates a temp board and plays all possible moves
@@ -163,7 +161,7 @@ int Game::maxVal(int tempBoard[ROWS][COLS], int alpha, int beta, int depth) //Se
 		return 100;
 	else if (checkPlayerWin(tempBoard))
 		return -100;
-	if (clock() - timer > 700)
+	if (clock() - timer > 500)
 	{
 		maxEval++;
 		return evaluate(tempBoard);
@@ -208,7 +206,7 @@ int Game::minVal(int tempBoard[ROWS][COLS], int alpha, int beta, int depth) //Se
 		return 100;
 	if (checkPlayerWin(tempBoard))
 		return -100;
-	if (clock() - timer > 700) //Timer used to calculate when to do evaluate function. Set to 7 seconds because of stack overflow issues
+	if (clock() - timer > 500) //Timer used to calculate when to do evaluate function. Set to 7 seconds because of stack overflow issues
 	{
 		minEval++;
 		return evaluate(tempBoard);
@@ -219,7 +217,7 @@ int Game::minVal(int tempBoard[ROWS][COLS], int alpha, int beta, int depth) //Se
 	int moveRow;
 	int moveCol;
 	int tempBoard1[ROWS][COLS];
-	vector<pair<pair<int, int>, pair<int, int>>> allMoves = calculateAllMoves();
+	vector<pair<pair<int, int>, pair<int, int>>> allMoves = calculateAllMovesPlayer();
 	for (int x = 0; x < allMoves.size(); x++)
 	{
 		for (int i = 0; i < ROWS; i++)
@@ -463,7 +461,6 @@ bool Game::playerMove(int pieceRow, int pieceCol, int moveRow, int moveCol)  //M
 		gameBoard[moveRow][moveCol] = gameBoard[pieceRow][pieceCol];
 		gameBoard[pieceRow][pieceCol] = 0;
 		lastMovedPiece(moveRow, moveCol);
-		checkWin();
 		setCurrentTurn(getAI());
 		return true;
 	}
@@ -471,7 +468,6 @@ bool Game::playerMove(int pieceRow, int pieceCol, int moveRow, int moveCol)  //M
 	{
 		capture(pieceRow, pieceCol, moveRow, moveCol);
 		lastMovedPiece(moveRow, moveCol);
-		checkWin();
 		setCurrentTurn(getAI());
 		return true;
 	}
@@ -492,14 +488,12 @@ void Game::movePiece(int board[ROWS][COLS], int pieceRow, int pieceCol, int move
 		board[moveRow][moveCol] = board[pieceRow][pieceCol];
 		board[pieceRow][pieceCol] = 0;
 		lastMovedPiece(moveRow, moveCol);
-		checkWin();
 		setCurrentTurn(getAI());
 	}
 	else if (checkMove(pieceRow, pieceCol, moveRow, moveCol) && board[moveRow][moveCol] == aiColor)
 	{
-		capture(pieceRow, pieceCol, moveRow, moveCol);
+		checkCapture(board, pieceRow, pieceCol, moveRow, moveCol);
 		lastMovedPiece(moveRow, moveCol);
-		checkWin();
 		setCurrentTurn(getAI());
 	}
 }
@@ -610,6 +604,16 @@ void Game::capture(int pieceRow, int pieceCol, int moveRow, int moveCol) //Captu
 	}
 }
 
+void Game::checkCapture(int board[ROWS][COLS], int pieceRow, int pieceCol, int moveRow, int moveCol) //Captures an enemy piece
+{
+	if (checkMove(pieceRow, pieceCol, moveRow, moveCol) && board[moveRow][moveCol] != board[pieceRow][pieceCol] && board[moveRow][moveCol] != 0)
+	{
+		int i = board[moveRow][moveCol];
+		board[moveRow][moveCol] = board[pieceRow][pieceCol];
+		board[pieceRow][pieceCol] = 0;
+	}
+}
+
 
 void Game::aiMove()  //AI's turn. Calculates all possible moves and chooses best one
 {
@@ -634,7 +638,6 @@ void Game::aiMove()  //AI's turn. Calculates all possible moves and chooses best
 			gameBoard[moveRow][moveCol] = gameBoard[pieceRow][pieceCol];
 			gameBoard[pieceRow][pieceCol] = 0;
 			lastMovedPiece(moveRow, moveCol);
-			checkWin();
 			setCurrentTurn(getAI());
 			aiMoved = true;
 		}
@@ -642,7 +645,6 @@ void Game::aiMove()  //AI's turn. Calculates all possible moves and chooses best
 		{
 			capture(pieceRow, pieceCol, moveRow, moveCol);
 			lastMovedPiece(moveRow, moveCol);
-			checkWin();
 			setCurrentTurn(getAI());
 			aiMoved = true;
 		}
@@ -669,6 +671,37 @@ vector<pair<pair<int, int>, pair<int, int>>> Game::calculateAllMoves()  //Calcul
 				int tempX = boardIt->first;
 				int tempY = boardIt->second;
 				if(checkMove(tempX, tempY, i, j) && !ifBlocked(tempX, tempY, i,j) && gameBoard[i][j] != aiColor)
+				{
+					pair<pair<int, int>, pair<int, int>> move = make_pair(make_pair(tempX, tempY), make_pair(i, j));
+					allMoves.push_back(move);
+				}
+			}
+		}
+	}
+	return allMoves;
+}
+
+vector<pair<pair<int, int>, pair<int, int>>> Game::calculateAllMovesPlayer()  //Calculates all possible moves based on board and returns a vector of pairs of pairs
+{
+	vector<pair<int, int>> allPieces;
+	for (int i = 0; i < ROWS; i++)
+	{
+		for (int j = 0; j < COLS; j++)
+		{
+			if (gameBoard[i][j] == playerColor)
+				allPieces.push_back(make_pair(i, j));
+		}
+	}
+	vector<pair<pair<int, int>, pair<int, int>>> allMoves;
+	for (vector<pair<int, int>>::iterator boardIt = allPieces.begin(); boardIt != allPieces.end(); ++boardIt)
+	{
+		for (int i = 0; i < ROWS; i++)
+		{
+			for (int j = 0; j < COLS; j++)
+			{
+				int tempX = boardIt->first;
+				int tempY = boardIt->second;
+				if (checkMove(tempX, tempY, i, j) && !ifBlocked(tempX, tempY, i, j) && gameBoard[i][j] != playerColor)
 				{
 					pair<pair<int, int>, pair<int, int>> move = make_pair(make_pair(tempX, tempY), make_pair(i, j));
 					allMoves.push_back(move);

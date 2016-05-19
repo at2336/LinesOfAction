@@ -20,6 +20,7 @@ class Game
 {
 public:
 	Game();
+public:
 	int getPlayer();
 	int getAI();
 	void setWhitePiecesNum(int num);
@@ -32,6 +33,7 @@ public:
 	bool checkMove(int pieceRow, int pieceCol, int moveRow, int moveCol);
 	void printBoard();
 	void capture(int pieceRow, int pieceCol, int moveRow, int moveCol);
+	void checkCapture(int board[ROWS][COLS], int pieceRow, int pieceCol, int moveRow, int moveCol);
 	int getMovesRow(int pieceRow);
 	int getMovesCol(int pieceCol);
 	bool ifBlocked(int pieceRow, int pieceCol, int moveRow, int moveCol);
@@ -39,7 +41,7 @@ public:
 	vector<pair<pair<int, int>, pair<int, int>>> calculateAllMoves();
 	void setCurrentTurn(int turn);
 	int getCurrentTurn();
-	//void outputMoves();
+	vector<pair<pair<int, int>, pair<int, int>>> calculateAllMovesPlayer();
 	int getMovesDiag(int pieceRow, int pieceCol, int moveRow, int moveCol);
 	void lastMovedPiece(int pieceRow, int pieceCol);
 	void movePiece(int board[ROWS][COLS], int pieceRow, int pieceCol, int moveRow, int moveCol);

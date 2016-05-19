@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
 		{
 			game.setCurrentTurn(game.getPlayer());
 			game.playerMove(pieceRow, pieceCol, moveRow, moveCol);
+			game.checkWin();
 		}
 		else if(game.getCurrentTurn() == game.getAI())
 		{
