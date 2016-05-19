@@ -13,8 +13,8 @@
 
 using namespace std;
 
-const int ROWS = 5;
-const int COLS = 5;
+const int ROWS = 6;
+const int COLS = 6;
 
 class Game
 {

@@ -145,6 +145,11 @@ pair<pair<int,int>,pair<int,int>> Game::action(int maxUtil, int minUtil, int dep
 			}
 		}
 		int val = value;
+		pieceRow = allMoves[x].first.first;
+		pieceCol = allMoves[x].first.second;
+		moveRow = allMoves[x].second.first;
+		moveCol = allMoves[x].second.second;
+		movePiece(tempBoard, pieceRow, pieceCol, moveRow, moveCol);
 		maxDepth++;
 		nodes++;
 		value = max(value, minVal(tempBoard, alpha, beta, depth+1));
@@ -600,7 +605,7 @@ void Game::capture(int pieceRow, int pieceCol, int moveRow, int moveCol) //Captu
 		else
 		{
 			--whitePieces;
-		}
+		} 
 	}
 }
 
